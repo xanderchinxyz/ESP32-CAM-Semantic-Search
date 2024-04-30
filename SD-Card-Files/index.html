@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<script src="javascript.js"></script>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<link rel="stylesheet" href="styling.css">
+<body onload="loadFromSDCard()">
+    <h1>ESP32-CAM Semantic Search</h1>
+    <p id="loading-status">Loading...</p>
+    <label for="search">Search:</label>
+    <input type="text" id="search" name="search">
+    <button onclick="calculateSimilarity(document.getElementById('search').value)">Search</button>
+    or
+    <button onclick="fetchAllPhotos()">Fetch All Images</button>
+    <div id="image-container" class="image-grid"></div>
+    <!-- <img src="Pictures/test.jpg" alt="Example Image"> -->
+</body>
+</html>
