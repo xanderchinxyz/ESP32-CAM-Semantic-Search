@@ -55,7 +55,10 @@ async function calculateSimilarity(textToSend) {
 }
 
 async function similarityPic() {
-
+    console.log(picDict[0].fileName)
+    console.log(picDict[1].fileName)
+    console.log(cosineSimilarity(picDict[0].vector, picDict[1].vector))
+    console.log(cosineSimilarity(picDict[7].vector, picDict[8].vector))
 }
 
 async function fetchAllPhotos() {
@@ -75,6 +78,26 @@ async function fetchAllPhotos() {
     });
 }
 
+function changeToggle(id, text1, text2) {
+    element = document.getElementById(id)
+    if(element.innerText == text2) {
+        element.innerText = text1
+    } else {
+        element.innerText = text2
+    }
+}
+
+function toggleCapture() {
+    element = document.getElementById('capture-status')
+    if(element.innerText == "Capture Off") {
+        element.innerText = "Capture On"
+        sendPOST('capture-on')
+    } else {
+        element.innerText = "Capture Off"
+        sendPOST('capture-off')
+    }
+}
+
 function cosineSimilarity(vec1, vec2) {
     const dot = dotProduct(vec1, vec2);
     const mag1 = magnitude(vec1);
@@ -86,6 +109,22 @@ function cosineSimilarity(vec1, vec2) {
     }
 
     return dot / (mag1 * mag2);
+}
+
+function sendPOST(action) {
+    var url = window.location.href + action;
+    fetch(url, {
+        method: "POST",
+        headers: {
+        'Content-Type': 'text/plain',
+        },
+        body: String(action),
+    })
+    .then(response => response.text()) // Get the response as text
+    .then(textData => {
+        // Handle the data from the response
+        //console.log('Response Data:', textData);
+    })
 }
 
 function dotProduct(vec1, vec2) {

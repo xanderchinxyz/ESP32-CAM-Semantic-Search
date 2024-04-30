@@ -9,6 +9,8 @@
 <link rel="stylesheet" href="styling.css">
 <body onload="loadFromSDCard()">
     <h1>ESP32-CAM Semantic Search</h1>
+    <button id="capture-status" onclick="toggleCapture()">Capture Off</button>
+    <button onclick="similarityPic()">sim</button>
     <p id="loading-status">Loading...</p>
     <label for="search">Search:</label>
     <input type="text" id="search" name="search">

@@ -17,10 +17,15 @@ const int   daylightOffset_sec = 0;
 const char *ssid = "";
 const char *password = "";
 
+// loop variables
+uint32_t lastCapture = 0;
+bool canCapture = false;
+
 AsyncWebServer server(80);
 
 //Definitions:
-#define NUM_FLOATS 512
+#define NUM_FLOATS 512          // number of dimensions in the vector returned by CLIP
+#define CAPTURE_INTERVAL 10000  // capture interval in milliseconds
 const String backendServer = "http://192.168.1.139:8000";
 
 #define PWDN_GPIO_NUM     32
@@ -161,9 +166,6 @@ void takePicture() {
   //take picture
   camera_fb_t * fb = NULL; // pointer
   fb = esp_camera_fb_get();
-//  esp_camera_fb_return(fb);
-//  delay(1000);
-//  fb = esp_camera_fb_get();
   if (!fb) {
     Serial.println("Camera capture failed");
   }
@@ -226,23 +228,30 @@ void setup() {
   initTime();
 
   //Route for root / web page
-  server.on("/", HTTP_GET, [](AsyncWebServerRequest *request){
+  server.on("/", HTTP_GET, [](AsyncWebServerRequest *request) {
+    canCapture = false;
     request->send(SD_MMC, "/index.html", "text/html");
+  });
+
+  //load any non-form POST request body and url
+  server.onRequestBody([](AsyncWebServerRequest *request, uint8_t *data, size_t len, size_t index, size_t total) {
+    Serial.println(request->url());
+    if (request->url() == "/capture-on") {
+      canCapture = true;
+    } else if(request->url() == "/capture-off") {
+      canCapture = false;
+    }
   });
 
   server.serveStatic("/", SD_MMC, "/");
   server.begin();
-
-  //delay(1000);
-  //takePicture();
-
-  //read floats from the binary file
-  //readFloatListFromFile("/vectors.bin");
 }
 
 void loop() {
-  
-  
+  if(canCapture && millis() - lastCapture > CAPTURE_INTERVAL) {
+    lastCapture = millis();
+    takePicture();
+  }
 }
 
 void readFloatListFromFile(const char* fileName) {
