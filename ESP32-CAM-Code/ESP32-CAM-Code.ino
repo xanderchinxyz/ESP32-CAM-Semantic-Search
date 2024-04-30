@@ -14,12 +14,8 @@ const long  gmtOffset_sec = -4*3600;
 const int   daylightOffset_sec = 0;
 
 // WiFi ssid and passwords
-const char *ssid = "FourJARS_2.4";
-const char *password = "jinnxanderrachelsong";
-//const char *ssid = "MERCKU-0640"; 
-//const char *password = "CP2146HD50H";
-//const char *ssid = "ch-place"; 
-//const char *password = "Blok110@42";
+const char *ssid = "";
+const char *password = "";
 
 AsyncWebServer server(80);
 
