@@ -10,14 +10,17 @@
 <body onload="loadFromSDCard()">
     <h1>ESP32-CAM Semantic Search</h1>
     <button id="capture-status" onclick="toggleCapture()">Capture Off</button>
-    <button onclick="similarityPic()">sim</button>
-    <p id="loading-status">Loading...</p>
-    <label for="search">Search:</label>
+    <button onclick="if(confirm('Delete all pictures on the SD card - Are You Sure?')){sendPOST('delete-pictures')}">Delete All Pictures</button>
+    <p id="loading-status">Loading Vectors...</p>
+    <label for="search">Search For:</label>
     <input type="text" id="search" name="search">
-    <button onclick="calculateSimilarity(document.getElementById('search').value)">Search</button>
+    <button onclick="calculateSimilarity(document.getElementById('search').value, document.getElementById('num-outputs').value)">Search</button>
     or
     <button onclick="fetchAllPhotos()">Fetch All Images</button>
+    <br>
+    <br>
+    <label for="num-outputs">Number of Images to Show:</label>
+    <input type="number" id="num-outputs" name="num-outputs" value='20'>
     <div id="image-container" class="image-grid"></div>
-    <!-- <img src="Pictures/test.jpg" alt="Example Image"> -->
 </body>
 </html>

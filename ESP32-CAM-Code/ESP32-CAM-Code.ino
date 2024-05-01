@@ -9,9 +9,6 @@
 #include "time.h"
 
 ESP32Time rtc;
-const char* ntpServer = "pool.ntp.org";
-const long  gmtOffset_sec = -4*3600;
-const int   daylightOffset_sec = 0;
 
 // WiFi ssid and passwords
 const char *ssid = "";
@@ -126,9 +123,9 @@ void initCamera() {
 
   //change camera settings
   sensor_t * s = esp_camera_sensor_get();
-  s->set_brightness(s, 2);     // -2 to 2
-  s->set_contrast(s, -2);       // -2 to 2
-  s->set_saturation(s, 0);     // -2 to 2
+  s->set_brightness(s, 0);     // -2 to 2
+  s->set_contrast(s, 2);       // -2 to 2
+  s->set_saturation(s, -2);     // -2 to 2
   s->set_special_effect(s, 0); // 0 to 6 (0 - No Effect, 1 - Negative, 2 - Grayscale, 3 - Red Tint, 4 - Green Tint, 5 - Blue Tint, 6 - Sepia)
   s->set_whitebal(s, 1);       // 0 = disable , 1 = enable
   s->set_awb_gain(s, 1);       // 0 = disable , 1 = enable
@@ -150,15 +147,6 @@ void initCamera() {
   s->set_colorbar(s, 0);       // 0 = disable , 1 = enable
 }
 
-void initTime() {
-  configTime(gmtOffset_sec, daylightOffset_sec, ntpServer); //get time from server
-  struct tm timeinfo;
-  getLocalTime(&timeinfo);
-  Serial.println(&timeinfo, "%A, %B %d %Y %H:%M:%S");
-  rtc.setTimeStruct(timeinfo);
-  Serial.println(rtc.getTimeDate());
-}
-
 void takePicture() {
   //get time
   uint32_t currentTime = rtc.getEpoch();
@@ -169,6 +157,7 @@ void takePicture() {
   if (!fb) {
     Serial.println("Camera capture failed");
   }
+  delay(1000);  //safety delay
   
   //send image to backend server
   HTTPClient http;
@@ -225,7 +214,6 @@ void setup() {
   initWiFi();
   initSDCard();
   initCamera();
-  initTime();
 
   //Route for root / web page
   server.on("/", HTTP_GET, [](AsyncWebServerRequest *request) {
@@ -240,6 +228,34 @@ void setup() {
       canCapture = true;
     } else if(request->url() == "/capture-off") {
       canCapture = false;
+    } else if(request->url() == "/delete-pictures") {
+      //clear vectors.bin
+      File file = SD_MMC.open("/vectors.bin", FILE_WRITE);
+      file.print("");
+
+      //delete all pictures in /Pictures
+      File root = SD_MMC.open("/Pictures");
+      file = root.openNextFile();
+      while(file){
+          SD_MMC.remove("/Pictures/" + String(file.name()));
+          file = root.openNextFile();
+      }
+    } else if(request->url() == "/send-time") {
+      //set time on esp32 rtc
+      String s = "";
+      for(size_t i=0; i<len; i++) {
+        s += char(data[i]);
+      }
+
+      uint16_t timeDate[6];
+      for(uint8_t x = 0; x < 5; x++) {
+        uint8_t nextComma = s.indexOf(',');
+        timeDate[x] = s.substring(0, nextComma).toInt();
+        s = s.substring(nextComma+1);
+      }
+      timeDate[5] = s.toInt();
+      rtc.setTime(timeDate[0], timeDate[1], timeDate[2], timeDate[3], timeDate[4], timeDate[5]);
+      Serial.println(rtc.getTimeDate());
     }
   });
 

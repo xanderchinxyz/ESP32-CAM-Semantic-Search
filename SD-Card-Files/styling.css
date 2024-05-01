@@ -1,8 +1,8 @@
 /* Style for the container of the grid */
 .image-grid {
-display: grid;
-grid-template-columns: repeat(auto-fill, minmax(400px, 1fr)); /* Adjust column size as needed */
-grid-gap: 10px; /* Adjust gap between images */
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(400px, 1fr)); /* Adjust column size as needed */
+    grid-gap: 10px; /* Adjust gap between images */
 }
 
 /* Style for individual images */
