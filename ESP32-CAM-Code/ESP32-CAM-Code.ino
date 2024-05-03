@@ -11,8 +11,8 @@
 ESP32Time rtc;
 
 // WiFi ssid and passwords
-const char *ssid = "FourJARS_2.4";
-const char *password = "jinnxanderrachelsong";
+const char *ssid = "";
+const char *password = "";
 
 // loop variables
 uint32_t lastCapture = 0;
