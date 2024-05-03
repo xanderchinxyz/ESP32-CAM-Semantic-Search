@@ -85,10 +85,11 @@ async function calculateSimilarity(textToSend, numPhotos) {
         });
     } catch (error) {
         console.error('Error:', error);
+        document.getElementById('error-message').innerText = error;
     }
 }
 
-async function fetchAllPhotos() {
+async function fetchRecentPhotos(numPhotos) {
     // sort by most recent
     picDict.sort((a, b) => {
         return b.fileName - a.fileName
@@ -97,11 +98,27 @@ async function fetchAllPhotos() {
     // display images
     const imageContainer = document.getElementById('image-container');
     imageContainer.innerHTML = "";
-    picDict.forEach(picDict => {
+    picDict.slice(0, numPhotos).forEach(picture => {
+        const container = document.createElement('div');
+
         const image = document.createElement('img');
-        image.src = 'Pictures/' + picDict.fileName + '.jpg'; // Assuming the images are stored in an "images" folder
-        image.alt = picDict.fileName + '.jpg';
-        imageContainer.appendChild(image);
+        image.src = 'Pictures/' + picture.fileName + '.jpg';
+        image.alt = picture.fileName + '.jpg';
+        container.appendChild(image);
+
+        const time = document.createElement('p');
+        let date = new Date(0);
+        date.setSeconds(parseInt(picture.fileName) + date.getTimezoneOffset()*60);
+        let currentTime = new Date() 
+        let diffTime = currentTime - date
+        let hoursSince = Math.floor(diffTime/(60*60*1000));
+        let minutesSince = Math.floor(diffTime/(60*1000)) - hoursSince*60;
+        let secondsSince = Math.floor(diffTime/1000) - hoursSince*3600 - minutesSince*60;
+        console.log("Hours: " + hoursSince + " Min: " + minutesSince + " Sec: " + secondsSince)
+        time.innerText = date.toLocaleString();
+        container.appendChild(time)
+
+        imageContainer.appendChild(container)
     });
 }
 

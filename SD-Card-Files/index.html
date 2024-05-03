@@ -16,8 +16,8 @@
     <input type="text" id="search" name="search">
     <button onclick="calculateSimilarity(document.getElementById('search').value, document.getElementById('num-outputs').value)">Search</button>
     or
-    <button onclick="fetchAllPhotos()">Fetch All Images</button>
-    <br>
+    <button onclick="fetchRecentPhotos(document.getElementById('num-outputs').value)">Fetch Most Recent Images</button>
+    <p id="error-message"></p>
     <br>
     <label for="num-outputs">Number of Images to Show:</label>
     <input type="number" id="num-outputs" name="num-outputs" value='20'>
