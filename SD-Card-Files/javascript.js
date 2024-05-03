@@ -1,3 +1,12 @@
+var skipped = 0;
+window.onscroll = function(ev) {
+    if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight) {
+        let imgDiv = document.getElementById('image-container');
+        let numImages = imgDiv.childNodes.length; 
+        displayImages(numImages+skipped, numImages+skipped+20);       
+    }
+};
+
 var picDict = [];
 async function loadFromSDCard() {
     //read vector list off of binary file
@@ -20,6 +29,8 @@ async function loadFromSDCard() {
             })
         }
         document.getElementById('loading-status').textContent = 'Loaded ' + numPhotos + ' Photos'
+
+        fetchRecentPhotos(0, 8);
     }
     reader.readAsArrayBuffer(data);
 
@@ -28,7 +39,6 @@ async function loadFromSDCard() {
     var rtcTime = now.toLocaleTimeString('en-US', {hour12: false}).split(":")
     rtcTime[2] = parseInt(rtcTime[2])
     var rtcDate = now.toLocaleDateString().split("/")
-    console.log(rtcDate);
     fetch(window.location.href + "send-time", {
         method: "POST",
         headers: {
@@ -42,7 +52,10 @@ async function loadFromSDCard() {
     })
 }
 
-async function calculateSimilarity(textToSend, numPhotos) {
+async function calculateSimilarity(textToSend, firstIndex, lastIndex) {
+    document.getElementById('image-container').innerHTML = "";  //clear image-container of pictures
+    skipped = 0;
+
     try {
         //get text vector
         let serverResponse = await fetch('http://192.168.1.139:8000/calculate_text/', {
@@ -59,64 +72,71 @@ async function calculateSimilarity(textToSend, numPhotos) {
             return b.similarity - a.similarity;
         })
 
-        // display images
-        const imageContainer = document.getElementById('image-container');
-        imageContainer.innerHTML = "";
-        picDict.slice(0, numPhotos).forEach(picture => {
-            const container = document.createElement('div');
+        displayImages(firstIndex, lastIndex, true)
 
-            const image = document.createElement('img');
-            image.src = 'Pictures/' + picture.fileName + '.jpg'; // Assuming the images are stored in an "images" folder
-            image.alt = picture.fileName + '.jpg';
-            container.appendChild(image);
-
-            const time = document.createElement('p');
-            console.log(parseInt(picture.fileName))
-            var date = new Date(0);
-            date.setSeconds(parseInt(picture.fileName) + date.getTimezoneOffset()*60);
-            time.innerText = date.toLocaleString();
-            container.appendChild(time)
-
-            const similarity = document.createElement('p');
-            similarity.innerText = "Similarity: " + picture.similarity;
-            container.appendChild(similarity)
-
-            imageContainer.appendChild(container)
-        });
     } catch (error) {
         console.error('Error:', error);
         document.getElementById('error-message').innerText = error;
     }
 }
 
-async function fetchRecentPhotos(numPhotos) {
+function fetchRecentPhotos(firstIndex, lastIndex, time=null) {
+    document.getElementById('image-container').innerHTML = "";  //clear image-container of pictures
+    skipped = 0;
+
     // sort by most recent
     picDict.sort((a, b) => {
         return b.fileName - a.fileName
     })
 
+    if(time) {
+        console.log(picDict[0].fileName)
+        let chosenTime = new Date(time)
+        chosenTime = Math.floor(chosenTime.getTime()/1000) - chosenTime.getTimezoneOffset()*60;
+        console.log(chosenTime)
+        for(let i = 0; i < picDict.length; i++) {
+            if (picDict[i].fileName > chosenTime) {
+                skipped += 1;
+            } else {
+                break;
+            }
+        }
+    }
+
+    displayImages(firstIndex+skipped, lastIndex+skipped)
+}
+
+function displayImages(firstIndex, lastIndex, similarity) {
     // display images
     const imageContainer = document.getElementById('image-container');
-    imageContainer.innerHTML = "";
-    picDict.slice(0, numPhotos).forEach(picture => {
+    picDict.slice(firstIndex, lastIndex).forEach(picture => {
         const container = document.createElement('div');
 
-        const image = document.createElement('img');
+        let image = document.createElement('img');
         image.src = 'Pictures/' + picture.fileName + '.jpg';
         image.alt = picture.fileName + '.jpg';
+        
         container.appendChild(image);
 
-        const time = document.createElement('p');
+        let time = document.createElement('p');
         let date = new Date(0);
         date.setSeconds(parseInt(picture.fileName) + date.getTimezoneOffset()*60);
+        time.innerText = date.toLocaleString();
+        container.appendChild(time)
+
+        let timeSince = document.createElement('p');
         let currentTime = new Date() 
         let diffTime = currentTime - date
         let hoursSince = Math.floor(diffTime/(60*60*1000));
         let minutesSince = Math.floor(diffTime/(60*1000)) - hoursSince*60;
-        let secondsSince = Math.floor(diffTime/1000) - hoursSince*3600 - minutesSince*60;
-        console.log("Hours: " + hoursSince + " Min: " + minutesSince + " Sec: " + secondsSince)
-        time.innerText = date.toLocaleString();
-        container.appendChild(time)
+        timeSince.innerText = (hoursSince == 0 ? "" : hoursSince + "  hr and ") + minutesSince + " min ago"
+        container.append(timeSince);
+
+        if(similarity) {
+            const similarity = document.createElement('p');
+            similarity.innerText = "Similarity: " + picture.similarity;
+            container.appendChild(similarity)
+        }
 
         imageContainer.appendChild(container)
     });
@@ -142,19 +162,6 @@ function toggleCapture() {
     }
 }
 
-function cosineSimilarity(vec1, vec2) {
-    const dot = dotProduct(vec1, vec2);
-    const mag1 = magnitude(vec1);
-    const mag2 = magnitude(vec2);
-
-    // Handle division by zero
-    if (mag1 === 0 || mag2 === 0) {
-        return 0;
-    }
-
-    return dot / (mag1 * mag2);
-}
-
 function sendPOST(action) {
     var url = window.location.href + action;
     fetch(url, {
@@ -170,6 +177,20 @@ function sendPOST(action) {
         //console.log('Response Data:', textData);
     })
 }
+
+function cosineSimilarity(vec1, vec2) {
+    const dot = dotProduct(vec1, vec2);
+    const mag1 = magnitude(vec1);
+    const mag2 = magnitude(vec2);
+
+    // Handle division by zero
+    if (mag1 === 0 || mag2 === 0) {
+        return 0;
+    }
+
+    return dot / (mag1 * mag2);
+}
+
 
 function dotProduct(vec1, vec2) {
     if (vec1.length !== vec2.length) {

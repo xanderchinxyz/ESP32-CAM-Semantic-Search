@@ -14,13 +14,12 @@
     <p id="loading-status">Loading Vectors...</p>
     <label for="search">Search For:</label>
     <input type="text" id="search" name="search">
-    <button onclick="calculateSimilarity(document.getElementById('search').value, document.getElementById('num-outputs').value)">Search</button>
-    or
-    <button onclick="fetchRecentPhotos(document.getElementById('num-outputs').value)">Fetch Most Recent Images</button>
+    <button onclick="calculateSimilarity(document.getElementById('search').value, 0, 8)">Search</button>
+    <label for="time-from">Display Images Taken Before:</label>
+    <input type="datetime-local" id="time-from" name="time-from">
+    <button onclick="fetchRecentPhotos(0, 8, document.getElementById('time-from').value)">Search</button>
     <p id="error-message"></p>
     <br>
-    <label for="num-outputs">Number of Images to Show:</label>
-    <input type="number" id="num-outputs" name="num-outputs" value='20'>
     <div id="image-container" class="image-grid"></div>
 </body>
 </html>
