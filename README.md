@@ -16,7 +16,14 @@ Essentially:
 # Installation Instructions:
 1. Get an ESP32-CAM and an SD card
 2. Clone the repo
-3. Install the 
+3. Copy the files in the SD-Card-Files folder onto the SD card and mount the SD card on the ESP32-CAM
+4. Install the required libraries in requirements.txt for main.py
+5. In a terminal type ```uvicorn main:app --host 0.0.0.0``` to start up the backend server
+6. Copy the IP address link to the backend server
+7. In the ESP32-CAM-Code.ino file enter your WiFi credentials, password, and the backend server link into the corresponding variables
+8. Upload the ESP32-CAM-Code.ino file to the ESP32-CAM
+9. Open the Serial Monitor and copy and paste the IP address shown into your browser to access the frontend hosted by the ESP32-CAM
+
 
 # Current Issues and Limitations (and Potential Fixes?):
 - Images sometimes take a long time to load due to the SD card having to open multiple image files. Currently, the short-term solution is to press the search button again if an image doesn't load properly. The long-term solution is to maybe use an MJPEG file to store all images similar to how all the vectors are stored in one binary file so only one file needs to be opened
