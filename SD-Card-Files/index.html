@@ -8,17 +8,21 @@
 </head>
 <link rel="stylesheet" href="styling.css">
 <body onload="loadFromSDCard()">
-    <h1>ESP32-CAM Semantic Search</h1>
-    <button id="capture-status" onclick="toggleCapture()">Capture Off</button>
-    <button onclick="if(confirm('Delete all pictures on the SD card - Are You Sure?')){sendPOST('delete-pictures')}">Delete All Pictures</button>
-    <p id="loading-status">Loading Vectors...</p>
-    <label for="search">Search For:</label>
-    <input type="text" id="search" name="search">
-    <button onclick="calculateSimilarity(document.getElementById('search').value, 0, 8)">Search</button>
-    <label for="time-from">Display Images Taken Before:</label>
-    <input type="datetime-local" id="time-from" name="time-from">
-    <button onclick="fetchRecentPhotos(0, 8, document.getElementById('time-from').value)">Search</button>
-    <p id="error-message"></p>
+    <div class="container">
+        <h1>ESP32-CAM Semantic Search</h1>
+        <button id="capture-status" onclick="toggleCapture()">Capture Off</button>
+        <button onclick="if(confirm('Delete all pictures on the SD card - Are You Sure?')){sendPOST('delete-pictures')}">Delete All Pictures</button>
+        <p id="loading-status">Loading Vectors...</p>
+        <div>
+            <label for="search">Search For:</label>
+            <input type="text" id="search" name="search">
+            <button onclick="calculateSimilarity(document.getElementById('search').value, 0, 8)">Search</button>
+            <label for="time-from">Display Images Taken Before:</label>
+            <input type="datetime-local" id="time-from" name="time-from">
+            <button onclick="fetchRecentPhotos(0, 8, document.getElementById('time-from').value)">Search</button>
+        </div>
+        <p id="error-message"></p>
+    </div>
     <br>
     <div id="image-container" class="image-grid"></div>
 </body>

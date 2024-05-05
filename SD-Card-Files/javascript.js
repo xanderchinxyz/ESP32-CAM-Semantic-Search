@@ -1,4 +1,5 @@
 var skipped = 0;
+var similarity = false;
 window.onscroll = function(ev) {
     if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight) {
         let imgDiv = document.getElementById('image-container');
@@ -55,6 +56,7 @@ async function loadFromSDCard() {
 async function calculateSimilarity(textToSend, firstIndex, lastIndex) {
     document.getElementById('image-container').innerHTML = "";  //clear image-container of pictures
     skipped = 0;
+    similarity = true;
 
     try {
         //get text vector
@@ -72,7 +74,7 @@ async function calculateSimilarity(textToSend, firstIndex, lastIndex) {
             return b.similarity - a.similarity;
         })
 
-        displayImages(firstIndex, lastIndex, true)
+        displayImages(firstIndex, lastIndex)
 
     } catch (error) {
         console.error('Error:', error);
@@ -83,6 +85,7 @@ async function calculateSimilarity(textToSend, firstIndex, lastIndex) {
 function fetchRecentPhotos(firstIndex, lastIndex, time=null) {
     document.getElementById('image-container').innerHTML = "";  //clear image-container of pictures
     skipped = 0;
+    similarity = false;
 
     // sort by most recent
     picDict.sort((a, b) => {
@@ -106,7 +109,7 @@ function fetchRecentPhotos(firstIndex, lastIndex, time=null) {
     displayImages(firstIndex+skipped, lastIndex+skipped)
 }
 
-function displayImages(firstIndex, lastIndex, similarity) {
+function displayImages(firstIndex, lastIndex) {
     // display images
     const imageContainer = document.getElementById('image-container');
     picDict.slice(firstIndex, lastIndex).forEach(picture => {
@@ -129,7 +132,7 @@ function displayImages(firstIndex, lastIndex, similarity) {
         let diffTime = currentTime - date
         let hoursSince = Math.floor(diffTime/(60*60*1000));
         let minutesSince = Math.floor(diffTime/(60*1000)) - hoursSince*60;
-        timeSince.innerText = (hoursSince == 0 ? "" : hoursSince + "  hr and ") + minutesSince + " min ago"
+        timeSince.innerText = "Last taken " + (hoursSince == 0 ? "" : hoursSince + "  hr and ") + minutesSince + " min ago"
         container.append(timeSince);
 
         if(similarity) {
@@ -190,7 +193,6 @@ function cosineSimilarity(vec1, vec2) {
 
     return dot / (mag1 * mag2);
 }
-
 
 function dotProduct(vec1, vec2) {
     if (vec1.length !== vec2.length) {

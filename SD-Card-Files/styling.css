@@ -11,3 +11,7 @@
     height: auto; /* Maintain aspect ratio */
     border-radius: 0px; /* Add rounded corners if desired */
 }
+
+.container {
+    text-align: center;
+}
