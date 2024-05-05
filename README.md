@@ -13,7 +13,7 @@ Essentially:
 9. Pictures can also be filtered before a certain date and time and users can clear all images and corresponding vector embeddings if space is running out on the SD card
 
 
-# Installation Instructions:
+# Setup Instructions:
 1. Get an ESP32-CAM and an SD card
 2. Clone the repo
 3. Copy the files in the SD-Card-Files folder onto the SD card and mount the SD card on the ESP32-CAM
@@ -23,7 +23,6 @@ Essentially:
 7. In the ESP32-CAM-Code.ino file enter your WiFi credentials, password, and the backend server link into the corresponding variables
 8. Upload the ESP32-CAM-Code.ino file to the ESP32-CAM
 9. Open the Serial Monitor and copy and paste the IP address shown into your browser to access the frontend hosted by the ESP32-CAM
-
 
 # Current Issues and Limitations (and Potential Fixes?):
 - Images sometimes take a long time to load due to the SD card having to open multiple image files. Currently, the short-term solution is to press the search button again if an image doesn't load properly. The long-term solution is to maybe use an MJPEG file to store all images similar to how all the vectors are stored in one binary file so only one file needs to be opened
@@ -35,6 +34,7 @@ Essentially:
 - Picture-to-picture similarity - using images as an input to search for similar images you've seen
 - Using a LiPo battery and making a proper 3D-printed headset to better house the battery and ESP32-CAM
 - Activity and habit tracking
+- Actually integrating the MUSE 2 headset somehow
 
 # Additional Notes:
 I mainly built this for fun and to see where this goes in the future cause I haven't built a comprehensive project like this in a long time. I also learned a lot of things such as:
