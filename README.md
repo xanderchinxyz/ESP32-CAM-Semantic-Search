@@ -1,6 +1,8 @@
 # ESP32-CAM-Semantic-Search
 I am a messy person who forgets where things are located in my house so I built this camera wearable to take pictures throughout my day. I can then search for objects I've seen so I don't lose track of where I put things by vectorizing images and text descriptions using OpenAI's Contrastive Language-Image Pretraining (CLIP) model.
 
+Demo: https://www.youtube.com/shorts/QoPYoWWtxFI
+
 Essentially:
 1. ESP32-CAM takes a picture every 10 seconds
 2. The picture is stored on the mounted SD card with the current local epoch time as the title
