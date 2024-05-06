@@ -8,22 +8,21 @@
 #include <ESP32Time.h>          // Time libraries
 #include "time.h"
 
-ESP32Time rtc;
+//Definitions:
+const char *ssid = "";            // change to your WiFi ssid
+const char *password = "";        // change to your WiFi password
+const String backendServer = "";  // change to the main.py server backend link
 
-// WiFi ssid and passwords
-const char *ssid = "";
-const char *password = "";
+#define NUM_FLOATS 512          // number of dimensions in the vector returned by CLIP
+#define CAPTURE_INTERVAL 10000  // capture interval in milliseconds
+
+ESP32Time rtc;
 
 // loop variables
 uint32_t lastCapture = 0;
 bool canCapture = false;
 
 AsyncWebServer server(80);
-
-//Definitions:
-#define NUM_FLOATS 512          // number of dimensions in the vector returned by CLIP
-#define CAPTURE_INTERVAL 10000  // capture interval in milliseconds
-const String backendServer = "http://192.168.1.139:8000";
 
 #define PWDN_GPIO_NUM     32
 #define RESET_GPIO_NUM    -1
@@ -42,6 +41,7 @@ const String backendServer = "http://192.168.1.139:8000";
 #define HREF_GPIO_NUM     23
 #define PCLK_GPIO_NUM     22
 
+uint64_t cardSize;
 void initSDCard() {
   if(!SD_MMC.begin("/sdcard", true)){
     Serial.println("SD Card Mount Failed");
@@ -65,7 +65,7 @@ void initSDCard() {
   } else {
     Serial.println("UNKNOWN");
   }
-  uint64_t cardSize = SD_MMC.cardSize() / (1024 * 1024);
+  cardSize = SD_MMC.cardSize() / (1024 * 1024);
   Serial.printf("SD Card Size: %lluMB\n", cardSize);
 }
 
@@ -256,6 +256,8 @@ void setup() {
       timeDate[5] = s.toInt();
       rtc.setTime(timeDate[0], timeDate[1], timeDate[2], timeDate[3], timeDate[4], timeDate[5]);
       Serial.println(rtc.getTimeDate());
+
+      request->send(200, "text/plain", cardSize);
     }
   });
 
@@ -270,6 +272,8 @@ void loop() {
   }
 }
 
+
+//only used this for testing (dw about it)
 void readFloatListFromFile(const char* fileName) {
   // Open the file for reading
   File file = SD_MMC.open(fileName, FILE_READ);

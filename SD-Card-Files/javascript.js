@@ -1,5 +1,7 @@
 var skipped = 0;
 var similarity = false;
+
+//everytime the user scrolls to the bottom load more images
 window.onscroll = function(ev) {
     if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight) {
         let imgDiv = document.getElementById('image-container');
@@ -31,7 +33,7 @@ async function loadFromSDCard() {
         }
         document.getElementById('loading-status').textContent = 'Loaded ' + numPhotos + ' Photos'
 
-        fetchRecentPhotos(0, 8);
+        fetchRecentPhotos(0, 8);    //load 8 photos at first
     }
     reader.readAsArrayBuffer(data);
 
@@ -115,18 +117,20 @@ function displayImages(firstIndex, lastIndex) {
     picDict.slice(firstIndex, lastIndex).forEach(picture => {
         const container = document.createElement('div');
 
+        //create and append images
         let image = document.createElement('img');
         image.src = 'Pictures/' + picture.fileName + '.jpg';
         image.alt = picture.fileName + '.jpg';
-        
         container.appendChild(image);
 
+        //create and append date and time of capture
         let time = document.createElement('p');
         let date = new Date(0);
         date.setSeconds(parseInt(picture.fileName) + date.getTimezoneOffset()*60);
         time.innerText = date.toLocaleString();
         container.appendChild(time)
 
+        //create and append time since capture
         let timeSince = document.createElement('p');
         let currentTime = new Date() 
         let diffTime = currentTime - date
@@ -135,6 +139,7 @@ function displayImages(firstIndex, lastIndex) {
         timeSince.innerText = "Last taken " + (hoursSince == 0 ? "" : hoursSince + "  hr and ") + minutesSince + " min ago"
         container.append(timeSince);
 
+        //add similarity if using the semantic search feature
         if(similarity) {
             const similarity = document.createElement('p');
             similarity.innerText = "Similarity: " + picture.similarity;

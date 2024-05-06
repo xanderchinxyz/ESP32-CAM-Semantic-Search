@@ -48,7 +48,6 @@ async def calculate_text(request: Request):
         
     return text_features[0].tolist()
 
-
 @app.get("/")
 async def root():
     return {"message: hello world"}
