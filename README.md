@@ -19,7 +19,7 @@ Essentially:
 1. Get an ESP32-CAM and an SD card
 2. Clone the repo
 3. Copy the files in the SD-Card-Files folder onto the SD card and mount the SD card on the ESP32-CAM
-4. Install the required libraries in requirements.txt for main.py
+4. Install the required libraries for main.py
 5. In a terminal type ```uvicorn main:app --host 0.0.0.0``` to start up the backend server
 6. Copy the IP address link to the backend server
 7. In the ESP32-CAM-Code.ino file enter your WiFi credentials, password, and the backend server link into the corresponding variables
